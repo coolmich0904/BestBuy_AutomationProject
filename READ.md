@@ -37,45 +37,133 @@ This is an automation testing project for the Best Buy E-commerce platform, leve
 ---
 
 ## 📋 UI Test Scenarios & Test Cases
-Scenario 1️⃣: Guest Login
-Description: Validates login form validity using both valid and invalid data.
-TC IDTest CaseInput ValuesExpected ResultStatus1-1Valid email and password inputvalid_email@test.com / password123Login successful, redirect to homepage⏳1-2Invalid email format inputinvalidEmail / password123Error message "Please enter a valid email"⏳1-3Empty email field(empty) / password123Error message "Email is required"⏳1-4Empty password fieldvalid_email@test.com / (empty)Error message "Password is required"⏳1-5All fields empty(empty) / (empty)Error messages displayed, login button disabled⏳
-Data File: data/login_test_data.json
+### Scenario 1️⃣: Guest Login
 
-Scenario 2️⃣: Product Search & Add to Cart
-Description: Validates search functionality normal operation and exception handling.
-TC IDTest CaseInputExpected ResultStatus2-1Valid single search term input"laptop"Search results page loads, 5+ products displayed⏳2-2Add first product from search results to cart"laptop" search then click first productProduct added to cart, confirmation message shown⏳2-3Non-existent search term input"xyzabc123notfound""0 results" message, "Try different keywords" helpful message displayed⏳2-4Search term with typo"lapto" (typo)"0 results", suggested search terms or similar products recommended⏳2-5Search with special characters"$@#%&"Safely processed or ignored, no errors⏳2-6Whitespace only input"   ""Please enter search term" message or "0 results"⏳
-Expected Benefit: User-friendly search experience
+**Description:** Validates login form validity using both valid and invalid data.
 
-Scenario 3️⃣: Pagination & Scroll-based Product Selection
-Description: Validates multi-page product list navigation and dynamic loading functionality.
-TC IDTest CaseActionExpected ResultStatus3-1First page product list loadsPage accessProduct list loads normally, minimum 10+ products displayed⏳3-2Page scroll (infinite scroll)Scroll page downAdditional products auto-load, loading indicator displayed⏳3-3Next page button clickClick "Next" buttonNew page product list loads, URL/page number updates⏳3-4Select product on next page and add to cartSelect product on page 2, click "Add to Cart"Product successfully added, cart quantity increases⏳3-5Last page confirmationNavigate to last page"Next" button disabled or hidden, "Previous" button enabled⏳3-6Previous page button functionalityClick "Previous" on page 2Navigate to previous page, product list redisplayed⏳
-Expected Benefit: Smooth product browsing experience, fast page loading
+| TC ID | Test Case | Input Values | Expected Result | Status |
+|-------|-----------|--------------|-----------------|--------|
+| 1-1 | Valid email and password input | valid_email@test.com / password123 | Login successful, redirect to homepage | ⏳ |
+| 1-2 | Invalid email format input | invalidEmail / password123 | Error message "Please enter a valid email" | ⏳ |
+| 1-3 | Empty email field | (empty) / password123 | Error message "Email is required" | ⏳ |
+| 1-4 | Empty password field | valid_email@test.com / (empty) | Error message "Password is required" | ⏳ |
+| 1-5 | All fields empty | (empty) / (empty) | Error messages displayed, login button disabled | ⏳ |
 
-Scenario 4️⃣: Shopping Cart Quantity Adjustment
-Description: Validates cart quantity adjustment and boundary value testing.
-TC IDTest CaseInputExpected ResultStatus4-1Normal quantity increase1 → 3Quantity changed to 3, price auto-calculated⏳4-2Normal quantity decrease3 → 1Quantity changed to 1, price auto-calculated⏳4-3Quantity set to 0Quantity: 0Product removed from cart⏳4-4Negative quantity inputQuantity: -5Input ignored or error message "Quantity must be 1 or more"⏳4-5Quantity exceeds stockCurrent stock: 10, Input: 15Auto-adjusted to max stock (10), advisory message shown⏳4-6Very large number inputQuantity: 999999Auto-adjusted to max stock quantity, no errors⏳4-7Quantity +/- button UIClick +/- buttonsQuantity increments/decrements by 1 per click, real-time update⏳
-Expected Benefit: Safe and intuitive quantity management
+**Data File:** `data/login_test_data.json`
 
-Scenario 5️⃣: Checkout Screen - Shipping Address Selection & Input
-Description: Validates shipping address input validity and security testing.
-TC IDTest CaseInputExpected ResultStatus5-1Valid shipping address input (normal case)Name: "Kim Min-su" / Address: "123 Main St, Seoul"Info saved, successfully advance to next step (checkout)⏳5-2Maximum character string in address field255 characters in addressSaved without errors, able to proceed to next step⏳5-3Exceeding maximum characters in address field256+ characters in addressError message "Address must be 255 characters or less" displayed⏳5-4SQL injection attack attemptName: "'; DROP TABLE users; --"Malicious code sanitized/blocked, processed normally⏳5-5XSS attack attemptName: "<script>alert('XSS')</script>"Script tags removed/escaped, stored as text only⏳5-6Special characters inputName: "O'Brien" / Address: "Apt. #501, 5th Ave."Normally saved, special characters safely processed⏳5-7Required field not filledName field emptyError message "Name is required", next button disabled⏳5-8Invalid postal codePostal code: "ABCDE"Error message "Please enter valid postal code format"⏳
-Data File: data/delivery_test_data.json
-Expected Benefit: Secure user information handling, input validity assurance
+---
 
-🌐 API Test Scenarios
-Scenario A: Product Search API Performance Testing
-Description: Validates backend API response times and performance.
-TC IDTest CaseRequestExpected ResultSLAStatusAPI-1Product search API response timeGET /api/products?search=laptopStatus: 200 OK, response time recorded< 500ms⏳API-2Empty search term API requestGET /api/products?search=Status: 200 OK, empty array returned< 300ms⏳API-3Large search results handlingGET /api/products?search=aStatus: 200 OK, pagination handled< 800ms⏳
+### Scenario 2️⃣: Product Search & Add to Cart
 
-Scenario B: Shopping Cart API Performance Testing
-Description: Validates shopping cart add/modify API response times.
-TC IDTest CaseRequestExpected ResultSLAStatusAPI-4Add product to cartPOST /api/cart/add (product_id: 123, quantity: 1)Status: 201 Created, product added< 300ms⏳API-5Modify cart item quantityPUT /api/cart/items/123 (quantity: 5)Status: 200 OK, quantity updated< 250ms⏳API-6Retrieve cartGET /api/cartStatus: 200 OK, cart items list returned< 400ms⏳
+**Description:** Validates search functionality normal operation and exception handling.
 
-Scenario C: Network Error & Timeout Handling
-Description: Validates resilience to network instability and server errors.
-TC IDTest CaseScenarioExpected BehaviorStatusAPI-7Connection timeoutRequest exceeds 1 second limitRetry logic activates, max 3 retries then failure returned⏳API-8Server error (500) responseAPI returns 500 Internal Server ErrorUser-friendly error message displayed⏳API-9Server error (503) responseAPI returns 503 Service UnavailableDisplay "Temporary error. Please try again later" message⏳API-10Network connection lossNetwork disconnects during requestAuto-reconnect, wait then retry⏳
-Expected Benefit: Stable and reliable API operation
+| TC ID | Test Case | Input | Expected Result | Status |
+|-------|-----------|-------|-----------------|--------|
+| 2-1 | Valid single search term input | "laptop" | Search results page loads, 5+ products displayed | ⏳ |
+| 2-2 | Add first product from search results to cart | "laptop" search then click first product | Product added to cart, confirmation message shown | ⏳ |
+| 2-3 | Non-existent search term input | "xyzabc123notfound" | "0 results" message, "Try different keywords" helpful message displayed | ⏳ |
+| 2-4 | Search term with typo | "lapto" (typo) | "0 results", suggested search terms or similar products recommended | ⏳ |
+| 2-5 | Search with special characters | "$@#%&" | Safely processed or ignored, no errors | ⏳ |
+| 2-6 | Whitespace only input | "   " | "Please enter search term" message or "0 results" | ⏳ |
+
+**Expected Benefit:** User-friendly search experience
+
+---
+
+### Scenario 3️⃣: Pagination & Scroll-based Product Selection
+
+**Description:** Validates multi-page product list navigation and dynamic loading functionality.
+
+| TC ID | Test Case | Action | Expected Result | Status |
+|-------|-----------|--------|-----------------|--------|
+| 3-1 | First page product list loads | Page access | Product list loads normally, minimum 10+ products displayed | ⏳ |
+| 3-2 | Page scroll (infinite scroll) | Scroll page down | Additional products auto-load, loading indicator displayed | ⏳ |
+| 3-3 | Next page button click | Click "Next" button | New page product list loads, URL/page number updates | ⏳ |
+| 3-4 | Select product on next page and add to cart | Select product on page 2, click "Add to Cart" | Product successfully added, cart quantity increases | ⏳ |
+| 3-5 | Last page confirmation | Navigate to last page | "Next" button disabled or hidden, "Previous" button enabled | ⏳ |
+| 3-6 | Previous page button functionality | Click "Previous" on page 2 | Navigate to previous page, product list redisplayed | ⏳ |
+
+**Expected Benefit:** Smooth product browsing experience, fast page loading
+
+---
+
+### Scenario 4️⃣: Shopping Cart Quantity Adjustment
+
+**Description:** Validates cart quantity adjustment and boundary value testing.
+
+| TC ID | Test Case | Input | Expected Result | Status |
+|-------|-----------|-------|-----------------|--------|
+| 4-1 | Normal quantity increase | 1 → 3 | Quantity changed to 3, price auto-calculated | ⏳ |
+| 4-2 | Normal quantity decrease | 3 → 1 | Quantity changed to 1, price auto-calculated | ⏳ |
+| 4-3 | Quantity set to 0 | Quantity: 0 | Product removed from cart | ⏳ |
+| 4-4 | Negative quantity input | Quantity: -5 | Input ignored or error message "Quantity must be 1 or more" | ⏳ |
+| 4-5 | Quantity exceeds stock | Current stock: 10, Input: 15 | Auto-adjusted to max stock (10), advisory message shown | ⏳ |
+| 4-6 | Very large number input | Quantity: 999999 | Auto-adjusted to max stock quantity, no errors | ⏳ |
+| 4-7 | Quantity +/- button UI | Click +/- buttons | Quantity increments/decrements by 1 per click, real-time update | ⏳ |
+
+**Expected Benefit:** Safe and intuitive quantity management
+
+---
+
+### Scenario 5️⃣: Checkout Screen - Shipping Address Selection & Input
+
+**Description:** Validates shipping address input validity and security testing.
+
+| TC ID | Test Case | Input | Expected Result | Status |
+|-------|-----------|-------|-----------------|--------|
+| 5-1 | Valid shipping address input (normal case) | Name: "Kim Min-su" / Address: "123 Main St, Seoul" | Info saved, successfully advance to next step (checkout) | ⏳ |
+| 5-2 | Maximum character string in address field | 255 characters in address | Saved without errors, able to proceed to next step | ⏳ |
+| 5-3 | Exceeding maximum characters in address field | 256+ characters in address | Error message "Address must be 255 characters or less" displayed | ⏳ |
+| 5-4 | SQL injection attack attempt | Name: "'; DROP TABLE users; --" | Malicious code sanitized/blocked, processed normally | ⏳ |
+| 5-5 | XSS attack attempt | Name: "<script>alert('XSS')</script>" | Script tags removed/escaped, stored as text only | ⏳ |
+| 5-6 | Special characters input | Name: "O'Brien" / Address: "Apt. #501, 5th Ave." | Normally saved, special characters safely processed | ⏳ |
+| 5-7 | Required field not filled | Name field empty | Error message "Name is required", next button disabled | ⏳ |
+| 5-8 | Invalid postal code | Postal code: "ABCDE" | Error message "Please enter valid postal code format" | ⏳ |
+
+**Data File:** `data/delivery_test_data.json`
+
+**Expected Benefit:** Secure user information handling, input validity assurance
+
+---
+
+## 🌐 API Test Scenarios
+
+### Scenario A: Product Search API Performance Testing
+
+**Description:** Validates backend API response times and performance.
+
+| TC ID | Test Case | Request | Expected Result | SLA | Status |
+|-------|-----------|---------|-----------------|-----|--------|
+| API-1 | Product search API response time | GET /api/products?search=laptop | Status: 200 OK, response time recorded | < 500ms | ⏳ |
+| API-2 | Empty search term API request | GET /api/products?search= | Status: 200 OK, empty array returned | < 300ms | ⏳ |
+| API-3 | Large search results handling | GET /api/products?search=a | Status: 200 OK, pagination handled | < 800ms | ⏳ |
+
+---
+
+### Scenario B: Shopping Cart API Performance Testing
+
+**Description:** Validates shopping cart add/modify API response times.
+
+| TC ID | Test Case | Request | Expected Result | SLA | Status |
+|-------|-----------|---------|-----------------|-----|--------|
+| API-4 | Add product to cart | POST /api/cart/add (product_id: 123, quantity: 1) | Status: 201 Created, product added | < 300ms | ⏳ |
+| API-5 | Modify cart item quantity | PUT /api/cart/items/123 (quantity: 5) | Status: 200 OK, quantity updated | < 250ms | ⏳ |
+| API-6 | Retrieve cart | GET /api/cart | Status: 200 OK, cart items list returned | < 400ms | ⏳ |
+
+---
+
+### Scenario C: Network Error & Timeout Handling
+
+**Description:** Validates resilience to network instability and server errors.
+
+| TC ID | Test Case | Scenario | Expected Behavior | Status |
+|-------|-----------|----------|-------------------|--------|
+| API-7 | Connection timeout | Request exceeds 1 second limit | Retry logic activates, max 3 retries then failure returned | ⏳ |
+| API-8 | Server error (500) response | API returns 500 Internal Server Error | User-friendly error message displayed | ⏳ |
+| API-9 | Server error (503) response | API returns 503 Service Unavailable | Display "Temporary error. Please try again later" message | ⏳ |
+| API-10 | Network connection loss | Network disconnects during request | Auto-reconnect, wait then retry | ⏳ |
+
+**Expected Benefit:** Stable and reliable API operation
 
 
 ---
